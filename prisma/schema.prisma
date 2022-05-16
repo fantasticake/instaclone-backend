@@ -1,0 +1,58 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         Int       @id @default(autoincrement())
+  username   String    @unique
+  email      String    @unique
+  password   String
+  avatar     String?
+  following  User[]    @relation(name: "Follow")
+  followers  User[]    @relation(name: "Follow")
+  photos     Photo[]
+  likePhotos Photo[]   @relation(name: "LikedPhoto")
+  comments   Comment[]
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @default(now()) @updatedAt
+}
+
+model Photo {
+  id        Int       @id @default(autoincrement())
+  url       String
+  caption   String?
+  hashtags  Hashtag[]
+  userId    Int
+  user      User      @relation(references: [id], fields: [userId])
+  likeUsers User[]    @relation(name: "LikedPhoto")
+  Comment   Comment[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  payload   String
+  userId    Int
+  user      User     @relation(references: [id], fields: [userId])
+  photoId   Int
+  photo     Photo    @relation(fields: [photoId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model Hashtag {
+  id        Int      @id @default(autoincrement())
+  hashtag   String   @unique
+  photos    Photo[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}

@@ -1,0 +1,10 @@
+{
+    "include": ["src"],
+    "compilerOptions": {
+        "target": "ES5",
+        "outDir": "build",
+        "allowJs": true,
+        "strict": true,
+        "esModuleInterop": true,
+    }
+}
