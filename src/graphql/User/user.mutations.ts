@@ -54,6 +54,34 @@ const editProfileResolver: ProtectedResolver = async (
   return { ok: true };
 };
 
+const deleteUserResolver: ProtectedResolver = async (
+  _,
+  __,
+  { loggedInUser }
+) => {
+  if (loggedInUser.avatar) deleteToAWSS3(loggedInUser.avatar);
+  const photos = await prisma.photo.findMany({
+    where: { userId: loggedInUser.id },
+    select: { url: true },
+  });
+  photos.forEach((photo) => deleteToAWSS3(photo.url));
+
+  await prisma.photo.deleteMany({
+    where: { userId: loggedInUser.id },
+  });
+  await prisma.room.deleteMany({
+    where: { users: { some: { id: loggedInUser.id } } },
+  });
+  await prisma.message.deleteMany({
+    where: { userId: loggedInUser.id },
+  });
+  await prisma.comment.deleteMany({
+    where: { userId: loggedInUser.id },
+  });
+  await prisma.user.delete({ where: { id: loggedInUser.id } });
+  return { ok: true };
+};
+
 const followResolver: ProtectedResolver = async (
   _,
   { userId },
@@ -103,6 +131,7 @@ const resolvers: Resolvers = {
     signUp: signUpResolver,
     login: loginResolver,
     editProfile: protectResolver(editProfileResolver),
+    deleteUser: protectResolver(deleteUserResolver),
     follow: protectResolver(followResolver),
     unfollow: protectResolver(unfollowResolver),
   },

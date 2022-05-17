@@ -47,6 +47,7 @@ const deletePhotoResolver: Resolver = async (
     if (photo) {
       await deleteToAWSS3(photo.url);
       await prisma.photo.delete({ where: { id: photoId } });
+      await prisma.comment.deleteMany({ where: { photoId } });
       await prisma.hashtag.deleteMany({ where: { photos: { none: {} } } });
       return { ok: true };
     }
@@ -61,7 +62,7 @@ const resolvers: Resolvers = {
         if (loggedInUser) {
           const hashtagformats = formatHashtags(caption);
           const url = await uploadToAWSS3(file, loggedInUser.id, "photos");
-          const photo = await prisma.photo.create({
+          await prisma.photo.create({
             data: {
               url,
               user: { connect: { id: loggedInUser.id } },
@@ -73,7 +74,7 @@ const resolvers: Resolvers = {
               }),
             },
           });
-          return photo;
+          return { ok: true };
         }
       }
     ),

@@ -1,10 +1,11 @@
-import { gql } from "apollo-server";
+import { gql } from "apollo-server-core";
 
 export default gql`
   type User {
     id: Int!
     username: String!
     email: String!
+    avatar: String
     totalFollowing: Int!
     totalFollowers: Int!
     createdAt: String!
@@ -27,6 +28,7 @@ export default gql`
     signUp(username: String!, email: String!, password: String!): MutationRes!
     login(username: String!, password: String!): LoginRes!
     editProfile(email: String!, avatar: Upload): MutationRes!
+    deleteUser: MutationRes!
     follow(userId: Int!): MutationRes!
     unfollow(userId: Int!): MutationRes!
   }

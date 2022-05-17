@@ -12,8 +12,8 @@ export default gql`
     seeComments(photoId: Int!): [Comment]
   }
   type Mutation {
-    createComment(photoId: Int!, payload: String!): MutationRes
-    editComment(commentId: Int!, payload: String!): MutationRes
+    createComment(photoId: Int!, payload: String!): MutationRes!
+    editComment(commentId: Int!, payload: String!): MutationRes!
     deleteComment(commentId: Int!): MutationRes!
   }
 `;

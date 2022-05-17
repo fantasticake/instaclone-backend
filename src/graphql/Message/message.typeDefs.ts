@@ -13,6 +13,7 @@ export default gql`
     seeMessages(roomId: Int!): [Message]
   }
   type Mutation {
-    createMessage(roomId: Int, userId: Int, payload: String!): MutationRes
+    createMessage(roomId: Int, userId: Int, payload: String!): MutationRes!
+    readMessage(messageId: Int!): MutationRes!
   }
 `;

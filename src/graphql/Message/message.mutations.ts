@@ -1,5 +1,6 @@
 import { ProtectedResolver, Resolvers } from "../../../types";
 import prisma from "../../prisma";
+import pubsub from "../../pubsub";
 import { protectResolver } from "../../utils";
 
 const createMessageResolver: ProtectedResolver = async (
@@ -13,13 +14,14 @@ const createMessageResolver: ProtectedResolver = async (
       select: { id: true },
     });
     if (room) {
-      await prisma.message.create({
+      const message = await prisma.message.create({
         data: {
           payload,
           room: { connect: { id: room.id } },
           user: { connect: { id: loggedInUser.id } },
         },
       });
+      pubsub.publish("MESSAGE_CREATED", { roomUpdated: message });
       return { ok: true };
     }
     return { ok: false, error: "Room not found." };
@@ -29,7 +31,7 @@ const createMessageResolver: ProtectedResolver = async (
       select: { id: true },
     });
     if (user) {
-      await prisma.message.create({
+      const message = await prisma.message.create({
         data: {
           payload,
           room: {
@@ -40,6 +42,7 @@ const createMessageResolver: ProtectedResolver = async (
           user: { connect: { id: loggedInUser.id } },
         },
       });
+      pubsub.publish("MESSAGE_CREATED", { roomUpdated: message });
       return { ok: true };
     }
     return { ok: false, error: "User not found." };
@@ -47,9 +50,36 @@ const createMessageResolver: ProtectedResolver = async (
   return { ok: false, error: "No target." };
 };
 
+const readMessageResolver: ProtectedResolver = async (
+  _,
+  { messageId },
+  { loggedInUser }
+) => {
+  const message = await prisma.message.findFirst({
+    where: {
+      id: messageId,
+      unread: true,
+      room: { users: { some: { id: loggedInUser.id } } },
+      userId: { not: loggedInUser.id },
+    },
+    select: { id: true },
+  });
+  if (message) {
+    await prisma.message.update({
+      where: {
+        id: messageId,
+      },
+      data: { unread: false },
+    });
+    return { ok: true };
+  }
+  return { ok: false, error: "Message not found." };
+};
+
 const resolvers: Resolvers = {
   Mutation: {
     createMessage: protectResolver(createMessageResolver),
+    readMessage: protectResolver(readMessageResolver),
   },
 };
 

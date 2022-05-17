@@ -1,4 +1,4 @@
-import { gql } from "apollo-server";
+import { gql } from "apollo-server-core";
 
 export default gql`
   type Photo {
@@ -21,10 +21,10 @@ export default gql`
   }
 
   type Mutation {
-    createPhoto(file: Upload!, caption: String): Photo
-    editPhoto(photoId: Int!, caption: String!): MutationRes
-    deletePhoto(photoId: Int!): MutationRes
-    likePhoto(photoId: Int!): MutationRes
-    unlikePhoto(photoId: Int!): MutationRes
+    createPhoto(file: Upload!, caption: String): MutationRes!
+    editPhoto(photoId: Int!, caption: String!): MutationRes!
+    deletePhoto(photoId: Int!): MutationRes!
+    likePhoto(photoId: Int!): MutationRes!
+    unlikePhoto(photoId: Int!): MutationRes!
   }
 `;

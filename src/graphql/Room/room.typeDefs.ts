@@ -11,4 +11,10 @@ export default gql`
   type Query {
     seeRooms: [Room]
   }
+  type Mutation {
+    exitRoom(roomId: Int!): MutationRes!
+  }
+  type Subscription {
+    roomUpdated(roomId: Int!): Message
+  }
 `;
