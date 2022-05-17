@@ -1,4 +1,10 @@
-import { ProtectResolver, Resolver, UploadToAWSS3 } from "../types";
+import {
+  DeleteToAWSS3,
+  ProtectedResolver,
+  ProtectResolver,
+  Resolver,
+  UploadToAWSS3,
+} from "../types";
 import AWS from "aws-sdk";
 
 export const protectResolver: ProtectResolver = (resolver) => {
@@ -26,6 +32,22 @@ export const uploadToAWSS3: UploadToAWSS3 = async (file, userId, directory) => {
     .promise();
 
   return photo.Location;
+};
+
+export const deleteToAWSS3: DeleteToAWSS3 = async (url) => {
+  const splitted = url.split("/");
+  const fileName = [
+    splitted[splitted.length - 2],
+    splitted[splitted.length - 1],
+  ].join("/");
+
+  const s3 = new AWS.S3({ region: "ap-northeast-2" });
+  await s3
+    .deleteObject({
+      Bucket: "fantasticake-instaclone-uploads",
+      Key: fileName,
+    })
+    .promise();
 };
 
 export const formatHashtags = (caption: string | null) => {

@@ -1,36 +1,50 @@
-import { Resolver, Resolvers } from "../../../types";
+import { ProtectedResolver, Resolver, Resolvers } from "../../../types";
 import prisma from "../../prisma";
 import { protectResolver } from "../../utils";
 
+const totalLikesResolver: Resolver = ({ id }) =>
+  prisma.user.count({ where: { likePhotos: { some: { id } } } });
+
+const totalCommentsResolver: Resolver = ({ id }) =>
+  prisma.comment.count({ where: { photoId: id } });
+
+const seeFeedResolver: ProtectedResolver = async (_, __, { loggedInUser }) => {
+  if (loggedInUser) {
+    const photos = await prisma.photo.findMany({
+      where: {
+        OR: [
+          { userId: loggedInUser.id },
+          { user: { followers: { some: { id: loggedInUser.id } } } },
+        ],
+      },
+      include: { user: true },
+    });
+    return photos;
+  }
+};
+
+const photoDetailResolver: Resolver = (_, { photoId }) =>
+  prisma.photo.findUnique({
+    where: { id: photoId },
+    include: { user: true, hashtags: true },
+  });
+
+const seePhotosByUserResolver: Resolver = (_, { userId }) =>
+  prisma.photo.findMany({ where: { userId }, include: { user: true } });
+
+const seePhotosByHashtagResolver: Resolver = (_, { hashtagId }) =>
+  prisma.photo.findMany({ where: { hashtags: { some: { id: hashtagId } } } });
+
 const resolvers: Resolvers = {
   Photo: {
-    totalLikes: ({ id }) =>
-      prisma.user.count({ where: { likePhotos: { some: { id } } } }),
-    totalComments: ({ id }) => prisma.comment.count({ where: { photoId: id } }),
+    totalLikes: totalLikesResolver,
+    totalComments: totalCommentsResolver,
   },
   Query: {
-    seeFeed: protectResolver(async (_, __, { loggedInUser }) => {
-      if (loggedInUser) {
-        const photos = await prisma.photo.findMany({
-          where: {
-            OR: [
-              { userId: loggedInUser.id },
-              { user: { followers: { some: { id: loggedInUser.id } } } },
-            ],
-          },
-          include: { user: true },
-        });
-        return photos;
-      }
-    }),
-    photoDetail: (_, { photoId }) =>
-      prisma.photo.findUnique({
-        where: { id: photoId },
-        include: { user: true },
-      }),
-
-    seePhotos: (_, { userId }) =>
-      prisma.photo.findMany({ where: { userId }, include: { user: true } }),
+    seeFeed: protectResolver(seeFeedResolver),
+    photoDetail: photoDetailResolver,
+    seePhotosByUser: seePhotosByUserResolver,
+    seePhotosByHashtag: seePhotosByHashtagResolver,
   },
 };
 

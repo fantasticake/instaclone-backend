@@ -5,6 +5,10 @@ interface Context {
   loggedInUser?: User;
 }
 
+interface ProtectedContext {
+  loggedInUser: User;
+}
+
 export type Resolver = (
   parent: any,
   args: any,
@@ -12,7 +16,22 @@ export type Resolver = (
   info: any
 ) => any;
 
-export type ProtectResolver = (resolver: Resolver) => Resolver;
+export type ProtectedResolver = (
+  parent: any,
+  args: any,
+  context: ProtectedContext,
+  info: any
+) => any;
+
+export type Resolvers = {
+  [key: string]: {
+    [key: string]: Resolver | ProtectedResolver;
+  };
+};
+
+export type ProtectResolver = (
+  resolver: ProtectedResolver
+) => ProtectedResolver;
 
 export type UploadToAWSS3 = (
   file: FileUpload,
@@ -20,8 +39,4 @@ export type UploadToAWSS3 = (
   directory: string
 ) => Promise<string>;
 
-export type Resolvers = {
-  [key: string]: {
-    [key: string]: Resolver;
-  };
-};
+export type DeleteToAWSS3 = (url: string) => void;

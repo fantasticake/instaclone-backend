@@ -1,6 +1,12 @@
 import { Resolver, Resolvers } from "../../../types";
 import prisma from "../../prisma";
-import { formatHashtags, protectResolver, uploadToAWSS3 } from "../../utils";
+import {
+  deleteToAWSS3,
+  formatHashtags,
+  protectResolver,
+  uploadToAWSS3,
+} from "../../utils";
+import AWS from "aws-sdk";
 
 const editPhotoResolver: Resolver = async (
   _,
@@ -36,11 +42,11 @@ const deletePhotoResolver: Resolver = async (
   if (loggedInUser) {
     const photo = await prisma.photo.findFirst({
       where: { id: photoId, userId: loggedInUser.id },
-      select: { id: true },
+      select: { id: true, url: true },
     });
     if (photo) {
+      await deleteToAWSS3(photo.url);
       await prisma.photo.delete({ where: { id: photoId } });
-      //delete awss3 file
       await prisma.hashtag.deleteMany({ where: { photos: { none: {} } } });
       return { ok: true };
     }

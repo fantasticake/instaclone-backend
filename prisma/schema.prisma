@@ -21,6 +21,8 @@ model User {
   photos     Photo[]
   likePhotos Photo[]   @relation(name: "LikedPhoto")
   comments   Comment[]
+  rooms      Room[]
+  messages   Message[]
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @default(now()) @updatedAt
 }
@@ -53,6 +55,26 @@ model Hashtag {
   id        Int      @id @default(autoincrement())
   hashtag   String   @unique
   photos    Photo[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model Room {
+  id        Int       @id @default(autoincrement())
+  users     User[]
+  messages  Message[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+}
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  payload   String
+  unread    Boolean  @default(true)
+  roomId    Int
+  room      Room     @relation(fields: [roomId], references: [id])
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 }

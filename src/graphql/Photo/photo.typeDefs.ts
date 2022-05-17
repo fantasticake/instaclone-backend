@@ -5,6 +5,7 @@ export default gql`
     id: Int!
     url: String!
     caption: String!
+    hashtags: [Hashtag]
     user: User!
     totalLikes: Int!
     totalComments: Int!
@@ -15,7 +16,8 @@ export default gql`
   type Query {
     seeFeed: [Photo]
     photoDetail(photoId: Int!): Photo
-    seePhotos(userId: Int!): [Photo]
+    seePhotosByUser(userId: Int!): [Photo]
+    seePhotosByHashtag(hashtagId: Int!): [Photo]
   }
 
   type Mutation {
