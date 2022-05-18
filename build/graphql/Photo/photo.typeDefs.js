@@ -1,9 +1,0 @@
-"use strict";
-var __makeTemplateObject = (this && this.__makeTemplateObject) || function (cooked, raw) {
-    if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
-    return cooked;
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-var apollo_server_core_1 = require("apollo-server-core");
-exports.default = (0, apollo_server_core_1.gql)(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n  type Photo {\n    id: Int!\n    url: String!\n    caption: String!\n    hashtags: [Hashtag]\n    user: User!\n    totalLikes: Int!\n    totalComments: Int!\n    createdAt: String!\n    updatedAt: String!\n  }\n\n  type Query {\n    seeFeed: [Photo]\n    photoDetail(photoId: Int!): Photo\n    seePhotosByUser(userId: Int!): [Photo]\n    seePhotosByHashtag(hashtagId: Int!): [Photo]\n  }\n\n  type Mutation {\n    createPhoto(file: Upload!, caption: String): MutationRes!\n    editPhoto(photoId: Int!, caption: String!): MutationRes!\n    deletePhoto(photoId: Int!): MutationRes!\n    likePhoto(photoId: Int!): MutationRes!\n    unlikePhoto(photoId: Int!): MutationRes!\n  }\n"], ["\n  type Photo {\n    id: Int!\n    url: String!\n    caption: String!\n    hashtags: [Hashtag]\n    user: User!\n    totalLikes: Int!\n    totalComments: Int!\n    createdAt: String!\n    updatedAt: String!\n  }\n\n  type Query {\n    seeFeed: [Photo]\n    photoDetail(photoId: Int!): Photo\n    seePhotosByUser(userId: Int!): [Photo]\n    seePhotosByHashtag(hashtagId: Int!): [Photo]\n  }\n\n  type Mutation {\n    createPhoto(file: Upload!, caption: String): MutationRes!\n    editPhoto(photoId: Int!, caption: String!): MutationRes!\n    deletePhoto(photoId: Int!): MutationRes!\n    likePhoto(photoId: Int!): MutationRes!\n    unlikePhoto(photoId: Int!): MutationRes!\n  }\n"])));
-var templateObject_1;
