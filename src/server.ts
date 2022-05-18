@@ -22,6 +22,23 @@ const wsServer = new WebSocketServer({
 const serverCleanup = useServer(
   {
     schema,
+    onConnect: async ({ connectionParams }) => {
+      if (!connectionParams?.token) return false;
+      if (typeof connectionParams.token == "string" && process.env.SECRET_KEY) {
+        const decoded = jwt.verify(
+          connectionParams.token,
+          process.env.SECRET_KEY
+        );
+        if (typeof decoded == "object") {
+          const user = await prisma.user.findUnique({
+            where: { id: decoded.userId },
+            select: { id: true },
+          });
+          if (user) return true;
+        }
+      }
+      return false;
+    },
     context: async ({ connectionParams }) => {
       if (
         connectionParams?.token &&
