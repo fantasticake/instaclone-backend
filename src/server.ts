@@ -8,6 +8,7 @@ import { createServer } from "http";
 import { WebSocketServer } from "ws";
 import { ApolloServerPluginDrainHttpServer } from "apollo-server-core";
 import { useServer } from "graphql-ws/lib/use/ws";
+import morgan from "morgan";
 
 require("dotenv").config();
 
@@ -91,6 +92,7 @@ const server = new ApolloServer({
 });
 
 server.start().then(() => {
+  app.use(morgan("dev"));
   app.use(graphqlUploadExpress());
   server.applyMiddleware({ app });
 
