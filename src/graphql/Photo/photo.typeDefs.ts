@@ -5,7 +5,6 @@ export default gql`
     id: Int!
     url: String!
     caption: String!
-    hashtags: [Hashtag]
     user: User!
     totalLikes: Int!
     totalComments: Int!

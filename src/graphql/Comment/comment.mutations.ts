@@ -13,14 +13,14 @@ const createCommentResolver: Resolver = async (
       select: { id: true },
     });
     if (photo) {
-      await prisma.comment.create({
+      const { id } = await prisma.comment.create({
         data: {
           payload,
           user: { connect: { id: loggedInUser.id } },
           photo: { connect: { id: photoId } },
         },
       });
-      return { ok: true };
+      return { ok: true, id };
     }
     return { ok: false, error: "Photo not found." };
   }

@@ -26,11 +26,11 @@ const seeFeedResolver: ProtectedResolver = async (_, __, { loggedInUser }) => {
 const photoDetailResolver: Resolver = (_, { photoId }) =>
   prisma.photo.findUnique({
     where: { id: photoId },
-    include: { user: true, hashtags: true },
+    include: { user: true },
   });
 
 const seePhotosByUserResolver: Resolver = (_, { userId }) =>
-  prisma.photo.findMany({ where: { userId }, include: { user: true } });
+  prisma.photo.findMany({ where: { userId } });
 
 const seePhotosByHashtagResolver: Resolver = (_, { hashtagId }) =>
   prisma.photo.findMany({ where: { hashtags: { some: { id: hashtagId } } } });

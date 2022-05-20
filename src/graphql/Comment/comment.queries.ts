@@ -9,7 +9,7 @@ const seeCommentsResolver: Resolver = async (_, { photoId }) => {
   if (photo) {
     return prisma.comment.findMany({
       where: { photoId },
-      include: { user: true },
+      include: { user: true, photo: true },
     });
   }
 };

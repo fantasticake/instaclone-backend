@@ -5,12 +5,14 @@ export default gql`
     id: Int!
     payload: String!
     user: User!
+    photo: Photo!
     createdAt: String!
     updatedAt: String!
   }
   type Query {
     seeComments(photoId: Int!): [Comment]
   }
+  type MutationRes
   type Mutation {
     createComment(photoId: Int!, payload: String!): MutationRes!
     editComment(commentId: Int!, payload: String!): MutationRes!

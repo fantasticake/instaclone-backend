@@ -35,7 +35,7 @@ model Photo {
   userId    Int
   user      User      @relation(references: [id], fields: [userId])
   likeUsers User[]    @relation(name: "LikedPhoto")
-  Comment   Comment[]
+  comments  Comment[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @default(now()) @updatedAt
 }
