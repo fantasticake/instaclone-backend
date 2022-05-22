@@ -6,8 +6,10 @@ export default gql`
     username: String!
     email: String!
     avatar: String
+    totalPosts: Int!
     totalFollowing: Int!
     totalFollowers: Int!
+    photos: [Photo]
     createdAt: String!
     updatedAt: String!
   }

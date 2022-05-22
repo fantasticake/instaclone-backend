@@ -2,11 +2,17 @@ import { Resolver, Resolvers } from "../../../types";
 import prisma from "../../prisma";
 import { protectResolver } from "../../utils";
 
+const totalPostsResolver: Resolver = ({ id }) =>
+  prisma.photo.count({ where: { userId: id } });
+
 const totalFollowingResolver: Resolver = ({ id }) =>
   prisma.user.count({ where: { followers: { some: { id } } } });
 
 const totalFollowersResolver: Resolver = ({ id }) =>
   prisma.user.count({ where: { following: { some: { id } } } });
+
+const photosResolver: Resolver = ({ id }) =>
+  prisma.photo.findMany({ where: { userId: id } });
 
 const seeFollowingResolver: Resolver = async (_, { userId }) => {
   const user = await prisma.user.findUnique({
@@ -55,6 +61,8 @@ const resolvers: Resolvers = {
   User: {
     totalFollowing: totalFollowingResolver,
     totalFollowers: totalFollowersResolver,
+    totalPosts: totalPostsResolver,
+    photos: photosResolver,
   },
   Query: {
     seeFollowing: seeFollowingResolver,
