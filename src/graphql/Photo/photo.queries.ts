@@ -20,9 +20,6 @@ const totalLikesResolver: Resolver = ({ id }) =>
 const totalCommentsResolver: Resolver = ({ id }) =>
   prisma.comment.count({ where: { photoId: id } });
 
-const commentsResolver: Resolver = ({ id }) =>
-  prisma.comment.findMany({ where: { photoId: id }, include: { user: true } });
-
 const seeFeedResolver: ProtectedResolver = async (_, __, { loggedInUser }) => {
   if (loggedInUser) {
     const photos = await prisma.photo.findMany({
@@ -44,6 +41,9 @@ const photoDetailResolver: Resolver = (_, { photoId }) =>
     include: { user: true },
   });
 
+const seePhotosByUserResolver: Resolver = (_, { userId }) =>
+  prisma.photo.findMany({ where: { userId } });
+
 const seePhotosByHashtagResolver: Resolver = (_, { hashtagId }) =>
   prisma.photo.findMany({ where: { hashtags: { some: { id: hashtagId } } } });
 
@@ -52,11 +52,11 @@ const resolvers: Resolvers = {
     isLiked: protectResolver(isLikedResolver),
     totalLikes: totalLikesResolver,
     totalComments: totalCommentsResolver,
-    comments: commentsResolver,
   },
   Query: {
     seeFeed: protectResolver(seeFeedResolver),
     photoDetail: photoDetailResolver,
+    seePhotosByUser: seePhotosByUserResolver,
     seePhotosByHashtag: seePhotosByHashtagResolver,
   },
 };

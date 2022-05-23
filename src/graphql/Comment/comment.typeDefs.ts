@@ -9,7 +9,9 @@ export default gql`
     createdAt: String!
     updatedAt: String!
   }
-  type MutationRes
+  type Query {
+    seeComments(photoId: Int!): [Comment]
+  }
   type Mutation {
     createComment(photoId: Int!, payload: String!): MutationRes!
     editComment(commentId: Int!, payload: String!): MutationRes!

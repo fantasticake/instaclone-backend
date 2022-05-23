@@ -9,7 +9,6 @@ export default gql`
     totalPosts: Int!
     totalFollowing: Int!
     totalFollowers: Int!
-    photos: [Photo]
     createdAt: String!
     updatedAt: String!
   }

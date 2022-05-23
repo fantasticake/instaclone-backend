@@ -11,9 +11,6 @@ const totalFollowingResolver: Resolver = ({ id }) =>
 const totalFollowersResolver: Resolver = ({ id }) =>
   prisma.user.count({ where: { following: { some: { id } } } });
 
-const photosResolver: Resolver = ({ id }) =>
-  prisma.photo.findMany({ where: { userId: id } });
-
 const seeFollowingResolver: Resolver = async (_, { userId }) => {
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -62,7 +59,6 @@ const resolvers: Resolvers = {
     totalFollowing: totalFollowingResolver,
     totalFollowers: totalFollowersResolver,
     totalPosts: totalPostsResolver,
-    photos: photosResolver,
   },
   Query: {
     seeFollowing: seeFollowingResolver,

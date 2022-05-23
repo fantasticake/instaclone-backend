@@ -9,7 +9,6 @@ export default gql`
     isLiked: Boolean!
     totalLikes: Int!
     totalComments: Int!
-    comments: [Comment]
     createdAt: String!
     updatedAt: String!
   }
@@ -17,6 +16,7 @@ export default gql`
   type Query {
     seeFeed: [Photo]
     photoDetail(photoId: Int!): Photo
+    seePhotosByUser(userId: Int!): [Photo]
     seePhotosByHashtag(hashtagId: Int!): [Photo]
   }
 
