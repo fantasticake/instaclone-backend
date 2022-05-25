@@ -62,7 +62,7 @@ const resolvers: Resolvers = {
         if (loggedInUser) {
           const hashtagformats = formatHashtags(caption);
           const url = await uploadToAWSS3(file, loggedInUser.id, "photos");
-          await prisma.photo.create({
+          const photo = await prisma.photo.create({
             data: {
               url,
               user: { connect: { id: loggedInUser.id } },
@@ -74,7 +74,7 @@ const resolvers: Resolvers = {
               }),
             },
           });
-          return { ok: true };
+          return { ok: true, id: photo.id };
         }
       }
     ),

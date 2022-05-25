@@ -4,7 +4,7 @@ export default gql`
   type Photo {
     id: Int!
     url: String!
-    caption: String!
+    caption: String
     user: User!
     isLiked: Boolean!
     totalLikes: Int!
