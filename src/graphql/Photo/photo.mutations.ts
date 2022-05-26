@@ -10,7 +10,7 @@ import AWS from "aws-sdk";
 
 const editPhotoResolver: Resolver = async (
   _,
-  { photoId, caption },
+  { photoId, caption = "" },
   { loggedInUser }
 ) => {
   if (loggedInUser) {
@@ -46,9 +46,9 @@ const deletePhotoResolver: Resolver = async (
     });
     if (photo) {
       await deleteToAWSS3(photo.url);
-      await prisma.photo.delete({ where: { id: photoId } });
       await prisma.comment.deleteMany({ where: { photoId } });
       await prisma.hashtag.deleteMany({ where: { photos: { none: {} } } });
+      await prisma.photo.delete({ where: { id: photoId } });
       return { ok: true };
     }
     return { ok: false, error: "Photo not found" };

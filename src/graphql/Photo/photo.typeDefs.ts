@@ -14,7 +14,7 @@ export default gql`
   }
 
   type Query {
-    seeFeed: [Photo]
+    seeFeed(offset: Int): [Photo]
     photoDetail(photoId: Int!): Photo
     seePhotosByUser(userId: Int!): [Photo]
     seePhotosByHashtag(hashtagId: Int!): [Photo]
@@ -22,7 +22,7 @@ export default gql`
 
   type Mutation {
     createPhoto(file: Upload!, caption: String): MutationRes!
-    editPhoto(photoId: Int!, caption: String!): MutationRes!
+    editPhoto(photoId: Int!, caption: String): MutationRes!
     deletePhoto(photoId: Int!): MutationRes!
     likePhoto(photoId: Int!): MutationRes!
     unlikePhoto(photoId: Int!): MutationRes!

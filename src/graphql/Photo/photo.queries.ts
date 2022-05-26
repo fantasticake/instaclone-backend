@@ -20,7 +20,11 @@ const totalLikesResolver: Resolver = ({ id }) =>
 const totalCommentsResolver: Resolver = ({ id }) =>
   prisma.comment.count({ where: { photoId: id } });
 
-const seeFeedResolver: ProtectedResolver = async (_, __, { loggedInUser }) => {
+const seeFeedResolver: ProtectedResolver = async (
+  _,
+  { offset = 0 },
+  { loggedInUser }
+) => {
   if (loggedInUser) {
     const photos = await prisma.photo.findMany({
       where: {
@@ -30,6 +34,9 @@ const seeFeedResolver: ProtectedResolver = async (_, __, { loggedInUser }) => {
         ],
       },
       include: { user: true },
+      skip: offset,
+      take: 5,
+      orderBy: { createdAt: "desc" },
     });
     return photos;
   }
