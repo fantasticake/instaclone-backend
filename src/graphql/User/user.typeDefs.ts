@@ -4,8 +4,9 @@ export default gql`
   type User {
     id: Int!
     username: String!
-    email: String!
+    email: String
     avatar: String
+    isFollowing: Boolean!
     totalPosts: Int!
     totalFollowing: Int!
     totalFollowers: Int!
@@ -28,8 +29,8 @@ export default gql`
   type Mutation {
     signUp(username: String!, email: String!, password: String!): MutationRes!
     login(username: String!, password: String!): LoginRes!
-    editProfile(email: String!, avatar: Upload): MutationRes!
-    deleteUser: MutationRes!
+    editProfile(email: String, avatar: Upload): MutationRes!
+    deleteAccount: MutationRes!
     follow(userId: Int!): MutationRes!
     unfollow(userId: Int!): MutationRes!
   }

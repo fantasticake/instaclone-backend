@@ -19,18 +19,25 @@ const loginResolver: Resolver = async (
   _,
   { username, password }: { username: string; password: string }
 ) => {
-  const user = await prisma.user.findUnique({
-    where: { username },
-    select: { id: true, password: true },
-  });
-  if (user) {
-    if (bcrypt.compareSync(password, user.password) && process.env.SECRET_KEY) {
-      const token = jwt.sign({ userId: user.id }, process.env.SECRET_KEY);
-      return { ok: true, token };
+  try {
+    const user = await prisma.user.findUnique({
+      where: { username },
+      select: { id: true, password: true },
+    });
+    if (user) {
+      if (
+        bcrypt.compareSync(password, user.password) &&
+        process.env.SECRET_KEY
+      ) {
+        const token = jwt.sign({ userId: user.id }, process.env.SECRET_KEY);
+        return { ok: true, token };
+      }
+      return { ok: false, error: "login failed" };
     }
-    return { ok: false, error: "login failed" };
+    return { ok: false, error: "username not found" };
+  } catch (error) {
+    return { ok: false, error };
   }
-  return { ok: false, error: "username not found" };
 };
 
 const editProfileResolver: ProtectedResolver = async (
@@ -49,12 +56,12 @@ const editProfileResolver: ProtectedResolver = async (
   }
   await prisma.user.update({
     where: { id: loggedInUser.id },
-    data: { email, ...(avatar && { avatar: avatarUrl }) },
+    data: { ...(email && { email }), ...(avatar && { avatar: avatarUrl }) },
   });
   return { ok: true };
 };
 
-const deleteUserResolver: ProtectedResolver = async (
+const deleteAccountResolver: ProtectedResolver = async (
   _,
   __,
   { loggedInUser }
@@ -62,22 +69,31 @@ const deleteUserResolver: ProtectedResolver = async (
   if (loggedInUser.avatar) deleteToAWSS3(loggedInUser.avatar);
   const photos = await prisma.photo.findMany({
     where: { userId: loggedInUser.id },
-    select: { url: true },
+    select: { id: true, url: true },
   });
   photos.forEach((photo) => deleteToAWSS3(photo.url));
+  photos.forEach(
+    async (photo) =>
+      await prisma.comment.deleteMany({
+        where: { photoId: photo.id },
+      })
+  );
+
+  await prisma.comment.deleteMany({
+    where: { userId: loggedInUser.id },
+  });
 
   await prisma.photo.deleteMany({
+    where: { userId: loggedInUser.id },
+  });
+
+  await prisma.message.deleteMany({
     where: { userId: loggedInUser.id },
   });
   await prisma.room.deleteMany({
     where: { users: { some: { id: loggedInUser.id } } },
   });
-  await prisma.message.deleteMany({
-    where: { userId: loggedInUser.id },
-  });
-  await prisma.comment.deleteMany({
-    where: { userId: loggedInUser.id },
-  });
+
   await prisma.user.delete({ where: { id: loggedInUser.id } });
   return { ok: true };
 };
@@ -131,7 +147,7 @@ const resolvers: Resolvers = {
     signUp: signUpResolver,
     login: loginResolver,
     editProfile: protectResolver(editProfileResolver),
-    deleteUser: protectResolver(deleteUserResolver),
+    deleteAccount: protectResolver(deleteAccountResolver),
     follow: protectResolver(followResolver),
     unfollow: protectResolver(unfollowResolver),
   },

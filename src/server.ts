@@ -79,15 +79,21 @@ const server = new ApolloServer({
     },
   ],
   context: async ({ req }) => {
-    if (req && typeof req.headers.token == "string" && process.env.SECRET_KEY) {
-      const decoded = jwt.verify(req.headers.token, process.env.SECRET_KEY);
-      if (typeof decoded == "object") {
-        const user = await prisma.user.findUnique({
-          where: { id: decoded.userId },
-        });
-        if (user) return { loggedInUser: user };
+    try {
+      if (
+        req &&
+        typeof req.headers.token == "string" &&
+        process.env.SECRET_KEY
+      ) {
+        const decoded = jwt.verify(req.headers.token, process.env.SECRET_KEY);
+        if (typeof decoded == "object") {
+          const user = await prisma.user.findUnique({
+            where: { id: decoded.userId },
+          });
+          if (user) return { loggedInUser: user };
+        }
       }
-    }
+    } catch (error) {}
   },
 });
 
