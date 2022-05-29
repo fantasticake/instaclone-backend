@@ -20,9 +20,10 @@ const createMessageResolver: ProtectedResolver = async (
           room: { connect: { id: room.id } },
           user: { connect: { id: loggedInUser.id } },
         },
+        include: { user: true },
       });
       pubsub.publish("MESSAGE_CREATED", { roomUpdated: message });
-      return { ok: true };
+      return { ok: true, id: message.id };
     }
     return { ok: false, error: "Room not found." };
   } else if (userId) {
@@ -41,9 +42,10 @@ const createMessageResolver: ProtectedResolver = async (
           },
           user: { connect: { id: loggedInUser.id } },
         },
+        include: { user: true },
       });
       pubsub.publish("MESSAGE_CREATED", { roomUpdated: message });
-      return { ok: true };
+      return { ok: true, id: message.id };
     }
     return { ok: false, error: "User not found." };
   }

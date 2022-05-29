@@ -10,8 +10,10 @@ export default gql`
   }
   type Query {
     seeRooms: [Room]
+    seeRoom(roomId: Int!): Room
   }
   type Mutation {
+    createRoom(userId: Int!): MutationRes!
     exitRoom(roomId: Int!): MutationRes!
   }
   type Subscription {
