@@ -6,6 +6,15 @@ import { deleteToAWSS3, protectResolver, uploadToAWSS3 } from "../../utils";
 require("dotenv").config();
 
 const signUpResolver: Resolver = async (_, { username, email, password }) => {
+  const existingUser = await prisma.user.findFirst({
+    where: { OR: [{ username }, { email }] },
+    select: { id: true },
+  });
+  if (existingUser)
+    return {
+      ok: false,
+      error: "Username or Email already exists.",
+    };
   const hashed = bcrypt.hashSync(password, 10);
   await prisma.user.create({
     data: { username, email, password: hashed },

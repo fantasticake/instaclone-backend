@@ -92,7 +92,9 @@ const server = new ApolloServer({
           if (user) return { loggedInUser: user };
         }
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   },
 });
 
