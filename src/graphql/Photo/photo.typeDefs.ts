@@ -18,6 +18,7 @@ export default gql`
     photoDetail(photoId: Int!): Photo
     seePhotosByUser(userId: Int!): [Photo]
     seePhotosByHashtag(hashtagId: Int!): [Photo]
+    seePhotos(offset: Int): [Photo]
   }
 
   type Mutation {

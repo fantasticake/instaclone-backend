@@ -54,6 +54,9 @@ const seePhotosByUserResolver: Resolver = (_, { userId }) =>
 const seePhotosByHashtagResolver: Resolver = (_, { hashtagId }) =>
   prisma.photo.findMany({ where: { hashtags: { some: { id: hashtagId } } } });
 
+const seePhotosResolver: Resolver = (_, { offset = 0 }) =>
+  prisma.photo.findMany({ skip: offset, take: 24 });
+
 const resolvers: Resolvers = {
   Photo: {
     isLiked: protectResolver(isLikedResolver),
@@ -65,6 +68,7 @@ const resolvers: Resolvers = {
     photoDetail: photoDetailResolver,
     seePhotosByUser: seePhotosByUserResolver,
     seePhotosByHashtag: seePhotosByHashtagResolver,
+    seePhotos: seePhotosResolver,
   },
 };
 
