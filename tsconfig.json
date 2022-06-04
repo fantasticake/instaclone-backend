@@ -1,13 +1,8 @@
 {
+    "include": ["src"],
     "compilerOptions": {
         "outDir": "build",
         "allowJs": true,
         "esModuleInterop": true,
-        "lib": ["DOM", "ESNext"],
-        "moduleResolution": "node",
-        "noEmit": true,
-        "resolveJsonModule": true,
-        "skipLibCheck": true,
-        "target": "ESNext"
-    }
+    },
 }
