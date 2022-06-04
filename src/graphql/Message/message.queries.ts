@@ -10,6 +10,7 @@ const seeMessagesResolver: ProtectedResolver = (
   prisma.message.findMany({
     where: { roomId, room: { users: { some: { id: loggedInUser.id } } } },
     include: { user: true },
+    orderBy: { createdAt: "desc" },
   });
 
 const resolvers: Resolvers = {

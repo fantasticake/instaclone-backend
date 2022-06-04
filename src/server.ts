@@ -23,13 +23,11 @@ const wsServer = new WebSocketServer({
 const serverCleanup = useServer(
   {
     schema,
-    onConnect: async ({ connectionParams }) => {
+    onConnect: async ({ connectionParams }: any) => {
       if (!connectionParams?.token) return false;
-      if (typeof connectionParams.token == "string" && process.env.SECRET_KEY) {
-        const decoded = jwt.verify(
-          connectionParams.token,
-          process.env.SECRET_KEY
-        );
+      if (process.env.SECRET_KEY) {
+        const token = connectionParams.token?._W || connectionParams.token;
+        const decoded = jwt.verify(token, process.env.SECRET_KEY);
         if (typeof decoded == "object") {
           const user = await prisma.user.findUnique({
             where: { id: decoded.userId },
@@ -40,16 +38,10 @@ const serverCleanup = useServer(
       }
       return false;
     },
-    context: async ({ connectionParams }) => {
-      if (
-        connectionParams?.token &&
-        typeof connectionParams.token == "string" &&
-        process.env.SECRET_KEY
-      ) {
-        const decoded = jwt.verify(
-          connectionParams.token,
-          process.env.SECRET_KEY
-        );
+    context: async ({ connectionParams }: any) => {
+      if (connectionParams?.token && process.env.SECRET_KEY) {
+        const token = connectionParams.token?._W || connectionParams.token;
+        const decoded = jwt.verify(token, process.env.SECRET_KEY);
         if (typeof decoded == "object") {
           const user = await prisma.user.findUnique({
             where: { id: decoded.userId },
