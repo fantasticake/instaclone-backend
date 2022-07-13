@@ -41,11 +41,11 @@ const loginResolver: Resolver = async (
         const token = jwt.sign({ userId: user.id }, process.env.SECRET_KEY);
         return { ok: true, token };
       }
-      return { ok: false, error: "login failed" };
+      return { ok: false, error: "Check a password" };
     }
-    return { ok: false, error: "username not found" };
-  } catch (error) {
-    return { ok: false, error };
+    return { ok: false, error: "Username not found" };
+  } catch {
+    return { ok: false, error: "Login failed" };
   }
 };
 
